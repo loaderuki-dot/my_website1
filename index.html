@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uz">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,9 +11,9 @@
       padding: 0;
     }
     body {
-      background-color: #000;
+      background-color: #020005;
       color: #fff;
-      font-family: 'Segoe UI', Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       overflow: hidden;
       height: 100vh;
       display: flex;
@@ -44,7 +44,7 @@
     .envelope {
       width: 260px;
       height: 170px;
-      background: rgba(15, 5, 25, 0.7);
+      background: rgba(15, 5, 25, 0.75);
       border: 2px solid rgba(255, 80, 140, 0.7);
       border-radius: 12px;
       box-shadow: 0 0 30px rgba(255, 50, 120, 0.5), inset 0 0 15px rgba(255, 50, 120, 0.3);
@@ -115,7 +115,7 @@
 <body>
 
   <div class="controls">
-    <button class="icon-btn" id="replay-btn" title="Перезапустить">↺</button>
+    <button class="icon-btn" id="replay-btn" title="Qayta boshlash">↺</button>
   </div>
 
   <div class="envelope-wrapper" id="envelope">
@@ -131,17 +131,17 @@
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 35);
+    camera.position.set(0, 0, 38);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    let stage = 0; // 0: Ждет клика, 1: Анимация
+    let stage = 0;
     let time = 0;
 
-    // 1. НАДПИСЬ SHODIYONA (ЧАСТИЦЫ)
+    // SHODIYONA YOZUVI
     function createTextParticles() {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -164,8 +164,8 @@
           const alpha = imgData[(y * canvas.width + x) * 4];
           if (alpha > 128) {
             const posX = (x - canvas.width / 2) * 0.045;
-            const posY = -(y - canvas.height / 2) * 0.045 - 4.5;
-            points.push(new THREE.Vector3(posX, posY, 0));
+            const posY = -(y - canvas.height / 2) * 0.045 - 5.5;
+            points.points = points.push(new THREE.Vector3(posX, posY, 0));
           }
         }
       }
@@ -191,37 +191,37 @@
     const textMesh = new THREE.Points(textGeo, textMat);
     scene.add(textMesh);
 
-    // 2. ВРАЩАЮЩАЯСЯ СПИРАЛЬ / РОЗА (КАК НА ВИДЕО)
-    const spiralCount = 3500;
-    const spiralGeo = new THREE.BufferGeometry();
-    const spiralPos = new Float32Array(spiralCount * 3);
-    const spiralColors = new Float32Array(spiralCount * 3);
+    // HAQIQIY 3D ROZA GULI (MATEMATIK HESOB)
+    const roseCount = 5000;
+    const roseGeo = new THREE.BufferGeometry();
+    const rosePos = new Float32Array(roseCount * 3);
+    const roseColors = new Float32Array(roseCount * 3);
 
-    for (let i = 0; i < spiralCount; i++) {
-      spiralPos[i * 3] = 0;
-      spiralPos[i * 3 + 1] = 0;
-      spiralPos[i * 3 + 2] = 0;
+    for (let i = 0; i < roseCount; i++) {
+      rosePos[i * 3] = 0;
+      rosePos[i * 3 + 1] = 0;
+      rosePos[i * 3 + 2] = 0;
 
-      const c = new THREE.Color().setHSL(0.93 + Math.random() * 0.05, 1, 0.6);
-      spiralColors[i * 3] = c.r;
-      spiralColors[i * 3 + 1] = c.g;
-      spiralColors[i * 3 + 2] = c.b;
+      const c = new THREE.Color().setHSL(0.92 + Math.random() * 0.05, 0.95, 0.55);
+      roseColors[i * 3] = c.r;
+      roseColors[i * 3 + 1] = c.g;
+      roseColors[i * 3 + 2] = c.b;
     }
-    spiralGeo.setAttribute('position', new THREE.BufferAttribute(spiralPos, 3));
-    spiralGeo.setAttribute('color', new THREE.BufferAttribute(spiralColors, 3));
+    roseGeo.setAttribute('position', new THREE.BufferAttribute(rosePos, 3));
+    roseGeo.setAttribute('color', new THREE.BufferAttribute(roseColors, 3));
 
-    const spiralMat = new THREE.PointsMaterial({
-      size: 0.45,
+    const roseMat = new THREE.PointsMaterial({
+      size: 0.42,
       vertexColors: true,
       transparent: true,
       opacity: 0,
       blending: THREE.AdditiveBlending
     });
-    const spiralMesh = new THREE.Points(spiralGeo, spiralMat);
-    spiralMesh.position.y = 3;
-    scene.add(spiralMesh);
+    const roseMesh = new THREE.Points(roseGeo, roseMat);
+    roseMesh.position.y = 2.5;
+    scene.add(roseMesh);
 
-    // 3. ЗЕЛЕНЫЙ СТЕБЕЛЬ РАЗВИВАЮЩИЙСЯ СНИЗУ
+    // YASHIL POYA
     const stemCount = 1200;
     const stemGeo = new THREE.BufferGeometry();
     const stemPos = new Float32Array(stemCount * 3);
@@ -250,7 +250,7 @@
     const stemMesh = new THREE.Points(stemGeo, stemMat);
     scene.add(stemMesh);
 
-    // СОБЫТИЯ И КЛИКИ
+    // BOSHQARUV
     const envelope = document.getElementById('envelope');
     const replayBtn = document.getElementById('replay-btn');
 
@@ -266,11 +266,11 @@
       time = 0;
       envelope.classList.remove('hide');
       textMat.opacity = 0;
-      spiralMat.opacity = 0;
+      roseMat.opacity = 0;
       stemMat.opacity = 0;
+      roseMesh.rotation.y = 0;
     });
 
-    // ЦИКЛ АНИМАЦИИ (1 В 1 КАК НА ВИДЕО)
     const clock = new THREE.Clock();
 
     function animate() {
@@ -280,36 +280,39 @@
       if (stage === 1) {
         time += delta;
 
-        // Появление элементов
         textMat.opacity = Math.min(time * 0.8, 1);
-        spiralMat.opacity = Math.min(time * 0.9, 0.9);
+        roseMat.opacity = Math.min(time * 0.9, 0.95);
 
-        // Анимация кругов/спирали розы
-        const sArr = spiralGeo.attributes.position.array;
-        for (let i = 0; i < spiralCount; i++) {
-          const progress = Math.min(time * 0.8, 1);
-          const theta = i * 0.08 + time * 2.5;
-          const r = (i / spiralCount) * 14 * progress;
+        // 3D ROZA FORMULASI (Haqqoniy gul hajmi va qatlamlari)
+        const rArr = roseGeo.attributes.position.array;
+        for (let i = 0; i < roseCount; i++) {
+          const progress = Math.min(time * 0.7, 1);
+          const u = (i / roseCount) * Math.PI * 10;
+          const v = (i / roseCount) * Math.PI * 2;
 
-          // Волнообразный узор цветка из видео
-          const wave = Math.sin(theta * 3) * 0.8;
-          sArr[i * 3] = (r + wave) * Math.cos(theta);
-          sArr[i * 3 + 1] = (r + wave) * Math.sin(theta) * 0.5;
-          sArr[i * 3 + 2] = Math.sin(r * 1.5) * 2;
+          const r = (Math.sin(2 * u) + 1.4) * Math.cos(v) * 4.5 * progress;
+          const x = r * Math.sin(u);
+          const z = r * Math.cos(u);
+          const y = (Math.sin(v) * 3 + Math.cos(u * 1.5) * 1.5) * progress;
+
+          rArr[i * 3] = x;
+          rArr[i * 3 + 1] = y;
+          rArr[i * 3 + 2] = z;
         }
-        spiralGeo.attributes.position.needsUpdate = true;
+        roseGeo.attributes.position.needsUpdate = true;
+        roseMesh.rotation.y += 0.005;
 
-        // Появление стебля снизу
-        if (time > 1.2) {
-          stemMat.opacity = Math.min((time - 1.2) * 1.2, 0.95);
+        // Poya
+        if (time > 0.8) {
+          stemMat.opacity = Math.min((time - 0.8) * 1.2, 0.95);
           const stArr = stemGeo.attributes.position.array;
           for (let i = 0; i < stemCount; i++) {
             const t = (i / stemCount);
-            const stemProgress = Math.min((time - 1.2) * 1.5, 1);
+            const stemProgress = Math.min((time - 0.8) * 1.5, 1);
             
-            stArr[i * 3] = (Math.random() - 0.5) * 0.4;
-            stArr[i * 3 + 1] = -4 + (t * 6.5 * stemProgress);
-            stArr[i * 3 + 2] = (Math.random() - 0.5) * 0.4;
+            stArr[i * 3] = Math.sin(t * Math.PI * 2) * 0.2;
+            stArr[i * 3 + 1] = 2.5 - (t * 8 * stemProgress);
+            stArr[i * 3 + 2] = Math.cos(t * Math.PI * 2) * 0.2;
           }
           stemGeo.attributes.position.needsUpdate = true;
         }
