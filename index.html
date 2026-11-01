@@ -83,7 +83,7 @@
       box-shadow: 0 0 30px rgba(255, 42, 117, 1);
     }
 
-    /* REPLAY BUTTON */
+    /* CONTROLS */
     .controls {
       position: absolute;
       top: 20px;
@@ -127,7 +127,6 @@
   <div id="canvas-container"></div>
 
   <script>
-    // SCENE SETUP
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x05020a, 0.015);
@@ -140,11 +139,10 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    // STATE MANAGEMENT
-    let stage = 0; // 0: Waiting, 1: Spiral Explosion + Text, 2: 3D Rose Flower
+    let stage = 0; // 0: Konvert, 1: Spiral + Shodiyona yozuvi, 2: 3D Roza guli
     let animationTime = 0;
 
-    // PARTICLE TEXT (SHODIYONA)
+    // 1. Shodiyona yozuvi zarrachalari
     function createTextParticles() {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -167,7 +165,7 @@
           const alpha = imgData[(y * canvas.width + x) * 4];
           if (alpha > 128) {
             const posX = (x - canvas.width / 2) * 0.055;
-            const posY = -(y - canvas.height / 2) * 0.055 - 4;
+            const posY = -(y - canvas.height / 2) * 0.055;
             points.push(new THREE.Vector3(posX, posY, 0));
           }
         }
@@ -175,8 +173,8 @@
       return points;
     }
 
-    // SPIRAL BACKGROUND PARTICLES
-    const spiralCount = 2500;
+    // Spiral Zarrachalari
+    const spiralCount = 2000;
     const spiralGeo = new THREE.BufferGeometry();
     const spiralPos = new Float32Array(spiralCount * 3);
     const spiralColors = new Float32Array(spiralCount * 3);
@@ -186,7 +184,7 @@
       spiralPos[i * 3 + 1] = 0;
       spiralPos[i * 3 + 2] = 0;
 
-      const c = new THREE.Color().setHSL(0.9 + Math.random() * 0.1, 0.9, 0.6);
+      const c = new THREE.Color().setHSL(0.95, 0.9, 0.6);
       spiralColors[i * 3] = c.r;
       spiralColors[i * 3 + 1] = c.g;
       spiralColors[i * 3 + 2] = c.b;
@@ -195,7 +193,7 @@
     spiralGeo.setAttribute('color', new THREE.BufferAttribute(spiralColors, 3));
 
     const particleMat = new THREE.PointsMaterial({
-      size: 0.6,
+      size: 0.5,
       vertexColors: true,
       transparent: true,
       opacity: 0,
@@ -204,7 +202,7 @@
     const spiralParticles = new THREE.Points(spiralGeo, particleMat);
     scene.add(spiralParticles);
 
-    // TEXT MESH
+    // Yozuv Mesh
     const textPoints = createTextParticles();
     const textGeo = new THREE.BufferGeometry();
     const textPos = new Float32Array(textPoints.length * 3);
@@ -215,7 +213,7 @@
     });
     textGeo.setAttribute('position', new THREE.BufferAttribute(textPos, 3));
     const textMat = new THREE.PointsMaterial({
-      size: 0.45,
+      size: 0.4,
       color: 0xff69b4,
       transparent: true,
       opacity: 0,
@@ -224,83 +222,69 @@
     const textMesh = new THREE.Points(textGeo, textMat);
     scene.add(textMesh);
 
-    // 3D MATHEMATICAL ROSE FLOWER
+    // 2. 3D Roza Guli va Poya
     const roseGroup = new THREE.Group();
     scene.add(roseGroup);
 
     function build3DRose() {
-      // Petals
-      const petalCount = 8000;
+      // Gul barglari
+      const petalCount = 7000;
       const roseGeo = new THREE.BufferGeometry();
       const rosePos = new Float32Array(petalCount * 3);
       const roseColors = new Float32Array(petalCount * 3);
 
       for (let i = 0; i < petalCount; i++) {
-        const u = Math.random() * Math.PI * 8;
+        const u = Math.random() * Math.PI * 6;
         const v = Math.random() * Math.PI;
-
-        // Mathematical Rose Surface Formula
-        const r = (Math.sin(1.2 * u) + 1.5) * Math.sin(v) * 6;
+        const r = (Math.sin(2 * u) + 1.3) * Math.sin(v) * 5;
+        
         const x = r * Math.cos(u);
         const z = r * Math.sin(u);
-        const y = (Math.cos(1.2 * u) + Math.cos(v) * 2) * 2 + 5;
+        const y = (Math.cos(2 * u) + Math.cos(v) * 1.5) * 1.8 + 6;
 
         rosePos[i * 3] = x;
         rosePos[i * 3 + 1] = y;
         rosePos[i * 3 + 2] = z;
 
         const col = new THREE.Color();
-        if (r < 3) col.setHSL(0.95, 1, 0.4); // Dark red inner core
-        else col.setHSL(0.92, 0.9, 0.6);   // Pinkish outer petals
-
+        col.setHSL(0.94, 0.9, 0.55 + Math.random() * 0.15);
         roseColors[i * 3] = col.r;
         roseColors[i * 3 + 1] = col.g;
         roseColors[i * 3 + 2] = col.b;
       }
-
       roseGeo.setAttribute('position', new THREE.BufferAttribute(rosePos, 3));
       roseGeo.setAttribute('color', new THREE.BufferAttribute(roseColors, 3));
 
       const roseMat = new THREE.PointsMaterial({
-        size: 0.4,
+        size: 0.38,
         vertexColors: true,
         transparent: true,
         opacity: 0,
         blending: THREE.AdditiveBlending
       });
-      const rosePoints = new THREE.Points(roseGeo, roseMat);
-      roseGroup.add(rosePoints);
+      roseGroup.add(new THREE.Points(roseGeo, roseMat));
 
-      // Stem & Leaves (Yashil Poya va Yaproqlar)
-      const stemCount = 2000;
+      // Yashil Poya
+      const stemCount = 1500;
       const stemGeo = new THREE.BufferGeometry();
       const stemPos = new Float32Array(stemCount * 3);
       const stemColors = new Float32Array(stemCount * 3);
 
       for (let i = 0; i < stemCount; i++) {
         const t = Math.random();
-        const y = 3 - t * 18; // Poya balandligi
+        const y = 5 - t * 16;
         const angle = Math.random() * Math.PI * 2;
-        const radius = 0.4;
+        const radius = 0.3;
 
-        let x = Math.cos(angle) * radius;
-        let z = Math.sin(angle) * radius;
-
-        // Leaves branching out
-        if (t > 0.4 && t < 0.6 && Math.random() > 0.5) {
-          x += Math.cos(angle) * (t - 0.4) * 15;
-        }
-
-        stemPos[i * 3] = x;
+        stemPos[i * 3] = Math.cos(angle) * radius;
         stemPos[i * 3 + 1] = y;
-        stemPos[i * 3 + 2] = z;
+        stemPos[i * 3 + 2] = Math.sin(angle) * radius;
 
-        const c = new THREE.Color().setHSL(0.35, 0.9, 0.4); // Yashil nur
+        const c = new THREE.Color().setHSL(0.33, 0.9, 0.45);
         stemColors[i * 3] = c.r;
         stemColors[i * 3 + 1] = c.g;
         stemColors[i * 3 + 2] = c.b;
       }
-
       stemGeo.setAttribute('position', new THREE.BufferAttribute(stemPos, 3));
       stemGeo.setAttribute('color', new THREE.BufferAttribute(stemColors, 3));
 
@@ -311,29 +295,24 @@
         opacity: 0,
         blending: THREE.AdditiveBlending
       });
-      const stemPoints = new THREE.Points(stemGeo, stemMat);
-      roseGroup.add(stemPoints);
-
-      roseGroup.position.y = -2;
+      roseGroup.add(new THREE.Points(stemGeo, stemMat));
+      roseGroup.position.y = -1;
     }
 
     build3DRose();
 
-    // INTERACTION LOGIC
+    // Boshqaruv
     const envelope = document.getElementById('envelope');
     const replayBtn = document.getElementById('replay-btn');
 
-    envelope.addEventListener('click', startAnimation);
-    replayBtn.addEventListener('click', resetAnimation);
-
-    function startAnimation() {
+    envelope.addEventListener('click', () => {
       if (stage !== 0) return;
       stage = 1;
       animationTime = 0;
       envelope.classList.add('hide');
-    }
+    });
 
-    function resetAnimation() {
+    replayBtn.addEventListener('click', () => {
       stage = 0;
       animationTime = 0;
       envelope.classList.remove('hide');
@@ -341,9 +320,9 @@
       textMat.opacity = 0;
       roseGroup.children.forEach(c => c.material.opacity = 0);
       roseGroup.rotation.y = 0;
-    }
+    });
 
-    // ANIMATION LOOP
+    // Animatsiya sikli
     const clock = new THREE.Clock();
 
     function animate() {
@@ -353,26 +332,25 @@
       if (stage === 1) {
         animationTime += delta;
 
-        // 1. Spiral Particle Expansion
-        particleMat.opacity = Math.min(animationTime * 0.8, 0.8);
+        // Spiral harakati
+        particleMat.opacity = Math.min(animationTime * 0.9, 0.85);
         const posArr = spiralGeo.attributes.position.array;
-
         for (let i = 0; i < spiralCount; i++) {
-          const r = (i / spiralCount) * 22 * Math.min(animationTime * 0.8, 1);
-          const theta = i * 0.1 + animationTime * 1.5;
+          const r = (i / spiralCount) * 18 * Math.min(animationTime * 0.7, 1);
+          const theta = i * 0.12 + animationTime * 2;
           posArr[i * 3] = r * Math.cos(theta);
-          posArr[i * 3 + 1] = r * Math.sin(theta) + Math.sin(theta * 2) * 2;
-          posArr[i * 3 + 2] = Math.sin(r) * 3;
+          posArr[i * 3 + 1] = r * Math.sin(theta);
+          posArr[i * 3 + 2] = Math.sin(r) * 2;
         }
         spiralGeo.attributes.position.needsUpdate = true;
 
-        // 2. Text Fade In
-        if (animationTime > 0.5) {
-          textMat.opacity = Math.min((animationTime - 0.5) * 1.2, 1);
+        // Shodiyona yozuvi chiqishi
+        if (animationTime > 0.6) {
+          textMat.opacity = Math.min((animationTime - 0.6) * 1.5, 1);
         }
 
-        // 3. Transition to Rose
-        if (animationTime > 3.8) {
+        // 3.5 sekunddan keyin Gulga o'tish
+        if (animationTime > 3.6) {
           stage = 2;
           animationTime = 0;
         }
@@ -380,18 +358,17 @@
       else if (stage === 2) {
         animationTime += delta;
 
-        // Fade out text and background spiral
-        textMat.opacity = Math.max(1 - animationTime * 0.8, 0);
-        particleMat.opacity = Math.max(0.8 - animationTime * 0.5, 0);
+        // Yozuv va spiralni o'chirish
+        textMat.opacity = Math.max(1 - animationTime * 1.2, 0);
+        particleMat.opacity = Math.max(0.85 - animationTime * 1.2, 0);
 
-        // Fade in 3D Rose Flower
+        // Gulni ko'rsatish
         roseGroup.children.forEach(c => {
-          c.material.opacity = Math.min(animationTime * 0.6, 0.9);
+          c.material.opacity = Math.min(animationTime * 0.8, 0.95);
         });
 
-        // Smooth rotation
-        roseGroup.rotation.y += 0.008;
-        roseGroup.rotation.x = Math.sin(animationTime * 0.5) * 0.1;
+        // Gulni aylantirish
+        roseGroup.rotation.y += 0.007;
       }
 
       renderer.render(scene, camera);
@@ -399,7 +376,6 @@
 
     animate();
 
-    // RESIZE HANDLER
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
