@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,9 +11,9 @@
       padding: 0;
     }
     body {
-      background-color: #05020a;
+      background-color: #000;
       color: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', Arial, sans-serif;
       overflow: hidden;
       height: 100vh;
       display: flex;
@@ -42,17 +42,17 @@
       transform: scale(0.8);
     }
     .envelope {
-      width: 280px;
-      height: 180px;
-      background: rgba(20, 10, 30, 0.6);
-      border: 2px solid rgba(255, 100, 150, 0.6);
+      width: 260px;
+      height: 170px;
+      background: rgba(15, 5, 25, 0.7);
+      border: 2px solid rgba(255, 80, 140, 0.7);
       border-radius: 12px;
-      box-shadow: 0 0 30px rgba(255, 50, 120, 0.4), inset 0 0 15px rgba(255, 50, 120, 0.2);
+      box-shadow: 0 0 30px rgba(255, 50, 120, 0.5), inset 0 0 15px rgba(255, 50, 120, 0.3);
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(8px);
     }
     .envelope::before {
       content: '';
@@ -60,9 +60,9 @@
       top: 0;
       width: 0;
       height: 0;
-      border-left: 140px solid transparent;
-      border-right: 140px solid transparent;
-      border-top: 100px solid rgba(255, 100, 150, 0.3);
+      border-left: 130px solid transparent;
+      border-right: 130px solid transparent;
+      border-top: 95px solid rgba(255, 100, 150, 0.35);
     }
     .btn-for-you {
       padding: 12px 28px;
@@ -71,7 +71,7 @@
       border-radius: 25px;
       color: #fff;
       font-size: 1.1rem;
-      font-weight: 600;
+      font-weight: bold;
       letter-spacing: 2px;
       box-shadow: 0 0 20px rgba(255, 42, 117, 0.8);
       cursor: pointer;
@@ -115,7 +115,7 @@
 <body>
 
   <div class="controls">
-    <button class="icon-btn" id="replay-btn" title="Qayta ijro">↺</button>
+    <button class="icon-btn" id="replay-btn" title="Перезапустить">↺</button>
   </div>
 
   <div class="envelope-wrapper" id="envelope">
@@ -129,20 +129,19 @@
   <script>
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x05020a, 0.015);
 
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 40);
+    camera.position.set(0, 0, 35);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    let stage = 0; // 0: Konvert, 1: Spiral + Shodiyona yozuvi, 2: 3D Roza guli
-    let animationTime = 0;
+    let stage = 0; // 0: Ждет клика, 1: Анимация
+    let time = 0;
 
-    // 1. Shodiyona yozuvi zarrachalari
+    // 1. НАДПИСЬ SHODIYONA (ЧАСТИЦЫ)
     function createTextParticles() {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -164,8 +163,8 @@
         for (let x = 0; x < canvas.width; x += 4) {
           const alpha = imgData[(y * canvas.width + x) * 4];
           if (alpha > 128) {
-            const posX = (x - canvas.width / 2) * 0.055;
-            const posY = -(y - canvas.height / 2) * 0.055;
+            const posX = (x - canvas.width / 2) * 0.045;
+            const posY = -(y - canvas.height / 2) * 0.045 - 4.5;
             points.push(new THREE.Vector3(posX, posY, 0));
           }
         }
@@ -173,36 +172,6 @@
       return points;
     }
 
-    // Spiral Zarrachalari
-    const spiralCount = 2000;
-    const spiralGeo = new THREE.BufferGeometry();
-    const spiralPos = new Float32Array(spiralCount * 3);
-    const spiralColors = new Float32Array(spiralCount * 3);
-
-    for (let i = 0; i < spiralCount; i++) {
-      spiralPos[i * 3] = 0;
-      spiralPos[i * 3 + 1] = 0;
-      spiralPos[i * 3 + 2] = 0;
-
-      const c = new THREE.Color().setHSL(0.95, 0.9, 0.6);
-      spiralColors[i * 3] = c.r;
-      spiralColors[i * 3 + 1] = c.g;
-      spiralColors[i * 3 + 2] = c.b;
-    }
-    spiralGeo.setAttribute('position', new THREE.BufferAttribute(spiralPos, 3));
-    spiralGeo.setAttribute('color', new THREE.BufferAttribute(spiralColors, 3));
-
-    const particleMat = new THREE.PointsMaterial({
-      size: 0.5,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0,
-      blending: THREE.AdditiveBlending
-    });
-    const spiralParticles = new THREE.Points(spiralGeo, particleMat);
-    scene.add(spiralParticles);
-
-    // Yozuv Mesh
     const textPoints = createTextParticles();
     const textGeo = new THREE.BufferGeometry();
     const textPos = new Float32Array(textPoints.length * 3);
@@ -213,8 +182,8 @@
     });
     textGeo.setAttribute('position', new THREE.BufferAttribute(textPos, 3));
     const textMat = new THREE.PointsMaterial({
-      size: 0.4,
-      color: 0xff69b4,
+      size: 0.38,
+      color: 0xff4d8d,
       transparent: true,
       opacity: 0,
       blending: THREE.AdditiveBlending
@@ -222,107 +191,86 @@
     const textMesh = new THREE.Points(textGeo, textMat);
     scene.add(textMesh);
 
-    // 2. 3D Roza Guli va Poya
-    const roseGroup = new THREE.Group();
-    scene.add(roseGroup);
+    // 2. ВРАЩАЮЩАЯСЯ СПИРАЛЬ / РОЗА (КАК НА ВИДЕО)
+    const spiralCount = 3500;
+    const spiralGeo = new THREE.BufferGeometry();
+    const spiralPos = new Float32Array(spiralCount * 3);
+    const spiralColors = new Float32Array(spiralCount * 3);
 
-    function build3DRose() {
-      // Gul barglari
-      const petalCount = 7000;
-      const roseGeo = new THREE.BufferGeometry();
-      const rosePos = new Float32Array(petalCount * 3);
-      const roseColors = new Float32Array(petalCount * 3);
+    for (let i = 0; i < spiralCount; i++) {
+      spiralPos[i * 3] = 0;
+      spiralPos[i * 3 + 1] = 0;
+      spiralPos[i * 3 + 2] = 0;
 
-      for (let i = 0; i < petalCount; i++) {
-        const u = Math.random() * Math.PI * 6;
-        const v = Math.random() * Math.PI;
-        const r = (Math.sin(2 * u) + 1.3) * Math.sin(v) * 5;
-        
-        const x = r * Math.cos(u);
-        const z = r * Math.sin(u);
-        const y = (Math.cos(2 * u) + Math.cos(v) * 1.5) * 1.8 + 6;
-
-        rosePos[i * 3] = x;
-        rosePos[i * 3 + 1] = y;
-        rosePos[i * 3 + 2] = z;
-
-        const col = new THREE.Color();
-        col.setHSL(0.94, 0.9, 0.55 + Math.random() * 0.15);
-        roseColors[i * 3] = col.r;
-        roseColors[i * 3 + 1] = col.g;
-        roseColors[i * 3 + 2] = col.b;
-      }
-      roseGeo.setAttribute('position', new THREE.BufferAttribute(rosePos, 3));
-      roseGeo.setAttribute('color', new THREE.BufferAttribute(roseColors, 3));
-
-      const roseMat = new THREE.PointsMaterial({
-        size: 0.38,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0,
-        blending: THREE.AdditiveBlending
-      });
-      roseGroup.add(new THREE.Points(roseGeo, roseMat));
-
-      // Yashil Poya
-      const stemCount = 1500;
-      const stemGeo = new THREE.BufferGeometry();
-      const stemPos = new Float32Array(stemCount * 3);
-      const stemColors = new Float32Array(stemCount * 3);
-
-      for (let i = 0; i < stemCount; i++) {
-        const t = Math.random();
-        const y = 5 - t * 16;
-        const angle = Math.random() * Math.PI * 2;
-        const radius = 0.3;
-
-        stemPos[i * 3] = Math.cos(angle) * radius;
-        stemPos[i * 3 + 1] = y;
-        stemPos[i * 3 + 2] = Math.sin(angle) * radius;
-
-        const c = new THREE.Color().setHSL(0.33, 0.9, 0.45);
-        stemColors[i * 3] = c.r;
-        stemColors[i * 3 + 1] = c.g;
-        stemColors[i * 3 + 2] = c.b;
-      }
-      stemGeo.setAttribute('position', new THREE.BufferAttribute(stemPos, 3));
-      stemGeo.setAttribute('color', new THREE.BufferAttribute(stemColors, 3));
-
-      const stemMat = new THREE.PointsMaterial({
-        size: 0.35,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0,
-        blending: THREE.AdditiveBlending
-      });
-      roseGroup.add(new THREE.Points(stemGeo, stemMat));
-      roseGroup.position.y = -1;
+      const c = new THREE.Color().setHSL(0.93 + Math.random() * 0.05, 1, 0.6);
+      spiralColors[i * 3] = c.r;
+      spiralColors[i * 3 + 1] = c.g;
+      spiralColors[i * 3 + 2] = c.b;
     }
+    spiralGeo.setAttribute('position', new THREE.BufferAttribute(spiralPos, 3));
+    spiralGeo.setAttribute('color', new THREE.BufferAttribute(spiralColors, 3));
 
-    build3DRose();
+    const spiralMat = new THREE.PointsMaterial({
+      size: 0.45,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending
+    });
+    const spiralMesh = new THREE.Points(spiralGeo, spiralMat);
+    spiralMesh.position.y = 3;
+    scene.add(spiralMesh);
 
-    // Boshqaruv
+    // 3. ЗЕЛЕНЫЙ СТЕБЕЛЬ РАЗВИВАЮЩИЙСЯ СНИЗУ
+    const stemCount = 1200;
+    const stemGeo = new THREE.BufferGeometry();
+    const stemPos = new Float32Array(stemCount * 3);
+    const stemColors = new Float32Array(stemCount * 3);
+
+    for (let i = 0; i < stemCount; i++) {
+      stemPos[i * 3] = 0;
+      stemPos[i * 3 + 1] = 0;
+      stemPos[i * 3 + 2] = 0;
+
+      const c = new THREE.Color(0x00ff66);
+      stemColors[i * 3] = c.r;
+      stemColors[i * 3 + 1] = c.g;
+      stemColors[i * 3 + 2] = c.b;
+    }
+    stemGeo.setAttribute('position', new THREE.BufferAttribute(stemPos, 3));
+    stemGeo.setAttribute('color', new THREE.BufferAttribute(stemColors, 3));
+
+    const stemMat = new THREE.PointsMaterial({
+      size: 0.35,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending
+    });
+    const stemMesh = new THREE.Points(stemGeo, stemMat);
+    scene.add(stemMesh);
+
+    // СОБЫТИЯ И КЛИКИ
     const envelope = document.getElementById('envelope');
     const replayBtn = document.getElementById('replay-btn');
 
     envelope.addEventListener('click', () => {
       if (stage !== 0) return;
       stage = 1;
-      animationTime = 0;
+      time = 0;
       envelope.classList.add('hide');
     });
 
     replayBtn.addEventListener('click', () => {
       stage = 0;
-      animationTime = 0;
+      time = 0;
       envelope.classList.remove('hide');
-      particleMat.opacity = 0;
       textMat.opacity = 0;
-      roseGroup.children.forEach(c => c.material.opacity = 0);
-      roseGroup.rotation.y = 0;
+      spiralMat.opacity = 0;
+      stemMat.opacity = 0;
     });
 
-    // Animatsiya sikli
+    // ЦИКЛ АНИМАЦИИ (1 В 1 КАК НА ВИДЕО)
     const clock = new THREE.Clock();
 
     function animate() {
@@ -330,45 +278,41 @@
       const delta = clock.getDelta();
 
       if (stage === 1) {
-        animationTime += delta;
+        time += delta;
 
-        // Spiral harakati
-        particleMat.opacity = Math.min(animationTime * 0.9, 0.85);
-        const posArr = spiralGeo.attributes.position.array;
+        // Появление элементов
+        textMat.opacity = Math.min(time * 0.8, 1);
+        spiralMat.opacity = Math.min(time * 0.9, 0.9);
+
+        // Анимация кругов/спирали розы
+        const sArr = spiralGeo.attributes.position.array;
         for (let i = 0; i < spiralCount; i++) {
-          const r = (i / spiralCount) * 18 * Math.min(animationTime * 0.7, 1);
-          const theta = i * 0.12 + animationTime * 2;
-          posArr[i * 3] = r * Math.cos(theta);
-          posArr[i * 3 + 1] = r * Math.sin(theta);
-          posArr[i * 3 + 2] = Math.sin(r) * 2;
+          const progress = Math.min(time * 0.8, 1);
+          const theta = i * 0.08 + time * 2.5;
+          const r = (i / spiralCount) * 14 * progress;
+
+          // Волнообразный узор цветка из видео
+          const wave = Math.sin(theta * 3) * 0.8;
+          sArr[i * 3] = (r + wave) * Math.cos(theta);
+          sArr[i * 3 + 1] = (r + wave) * Math.sin(theta) * 0.5;
+          sArr[i * 3 + 2] = Math.sin(r * 1.5) * 2;
         }
         spiralGeo.attributes.position.needsUpdate = true;
 
-        // Shodiyona yozuvi chiqishi
-        if (animationTime > 0.6) {
-          textMat.opacity = Math.min((animationTime - 0.6) * 1.5, 1);
+        // Появление стебля снизу
+        if (time > 1.2) {
+          stemMat.opacity = Math.min((time - 1.2) * 1.2, 0.95);
+          const stArr = stemGeo.attributes.position.array;
+          for (let i = 0; i < stemCount; i++) {
+            const t = (i / stemCount);
+            const stemProgress = Math.min((time - 1.2) * 1.5, 1);
+            
+            stArr[i * 3] = (Math.random() - 0.5) * 0.4;
+            stArr[i * 3 + 1] = -4 + (t * 6.5 * stemProgress);
+            stArr[i * 3 + 2] = (Math.random() - 0.5) * 0.4;
+          }
+          stemGeo.attributes.position.needsUpdate = true;
         }
-
-        // 3.5 sekunddan keyin Gulga o'tish
-        if (animationTime > 3.6) {
-          stage = 2;
-          animationTime = 0;
-        }
-      } 
-      else if (stage === 2) {
-        animationTime += delta;
-
-        // Yozuv va spiralni o'chirish
-        textMat.opacity = Math.max(1 - animationTime * 1.2, 0);
-        particleMat.opacity = Math.max(0.85 - animationTime * 1.2, 0);
-
-        // Gulni ko'rsatish
-        roseGroup.children.forEach(c => {
-          c.material.opacity = Math.min(animationTime * 0.8, 0.95);
-        });
-
-        // Gulni aylantirish
-        roseGroup.rotation.y += 0.007;
       }
 
       renderer.render(scene, camera);
