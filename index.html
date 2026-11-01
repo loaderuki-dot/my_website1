@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shodiyona ❤️</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+ background:#050008;
+ overflow:hidden;
+ height:100vh;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+}
+
+.scene{
+ position:relative;
+ width:100%;
+ height:100vh;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ background:radial-gradient(ellipse,#28001d 0%,#080008 65%,#000 100%);
+ overflow:hidden;
+}
+
+.rose{
+ position:absolute;
+ top:12%;
+ width:260px;
+ height:260px;
+ animation:float 4s ease-in-out infinite;
+ filter:drop-shadow(0 0 20px #ff008c);
+}
+
+.rose svg{width:100%;height:100%}
+
+@keyframes float{
+ 0%,100%{transform:translateY(0) scale(1)}
+ 50%{transform:translateY(-15px) scale(1.05)}
+}
+
+.name{
+ position:absolute;
+ top:55%;
+ width:100%;
+ text-align:center;
+ font-family:'Great Vibes',cursive;
+ font-size:clamp(55px,10vw,105px);
+ color:#ff9de5;
+ text-shadow:0 0 10px #ff00aa,0 0 30px #ff008c;
+ animation:glow 2s infinite alternate;
+}
+
+@keyframes glow{
+ from{filter:brightness(.8)}
+ to{filter:brightness(1.5)}
+}
+
+.message{
+ position:absolute;
+ top:72%;
+ width:100%;
+ text-align:center;
+ color:#ffc3ed;
+ font-family:'Great Vibes',cursive;
+ font-size:clamp(25px,5vw,40px);
+ text-shadow:0 0 15px #ff00bb;
+ animation:appear 3s ease both;
+}
+
+@keyframes appear{
+ from{opacity:0;transform:translateY(25px)}
+ to{opacity:1;transform:translateY(0)}
+}
+
+.petal{
+ position:absolute;
+ top:-30px;
+ width:17px;
+ height:25px;
+ border-radius:100% 0 100% 0;
+ background:linear-gradient(135deg,#ffb0e9,#ff007b);
+ box-shadow:0 0 12px #ff168f;
+ animation:fall linear infinite;
+}
+
+@keyframes fall{
+ to{transform:translateY(110vh) rotate(720deg)}
+}
+
+.butterfly{
+ position:absolute;
+ color:#ff8cde;
+ font-size:35px;
+ filter:drop-shadow(0 0 12px #ff00cc);
+ animation:fly 8s ease-in-out infinite alternate;
+}
+
+.b1{top:30%;left:10%}
+.b2{top:40%;right:10%;animation-delay:2s}
+.b3{top:65%;left:75%;animation-delay:1s}
+
+@keyframes fly{
+ 0%{transform:translate(0,0) rotate(-15deg)}
+ 50%{transform:translate(35px,-40px) rotate(15deg)}
+ 100%{transform:translate(-20px,20px) rotate(-10deg)}
+}
+
+.star{
+ position:absolute;
+ width:4px;
+ height:4px;
+ border-radius:50%;
+ background:white;
+ box-shadow:0 0 12px 3px #ff39c5;
+ animation:twinkle 1.5s infinite alternate;
+}
+
+@keyframes twinkle{
+ from{opacity:.2;transform:scale(.5)}
+ to{opacity:1;transform:scale(2)}
+}
+</style>
+</head>
+
+<body>
+
+<div class="scene" id="scene">
+
+<!-- ATIRGUL -->
+<div class="rose">
+<svg viewBox="0 0 300 300">
+
+<defs>
+ <radialGradient id="rose" cx="40%" cy="30%">
+  <stop offset="0%" stop-color="#ffb0e8"/>
+  <stop offset="40%" stop-color="#ff168b"/>
+  <stop offset="100%" stop-color="#70002f"/>
+ </radialGradient>
+</defs>
+
+<!-- TASHQI YAPROQLAR -->
+<g fill="url(#rose)" stroke="#ff69c8" stroke-width="2">
+ <ellipse cx="150" cy="115" rx="70" ry="100"/>
+ <ellipse cx="105" cy="145" rx="65" ry="85" transform="rotate(-45 105 145)"/>
+ <ellipse cx="195" cy="145" rx="65" ry="85" transform="rotate(45 195 145)"/>
+ <ellipse cx="150" cy="175" rx="85" ry="65"/>
+ <ellipse cx="80" cy="180" rx="45" ry="65" transform="rotate(-65 80 180)"/>
+ <ellipse cx="220" cy="180" rx="45" ry="65" transform="rotate(65 220 180)"/>
+</g>
+
+<!-- ICHKI YAPROQLAR -->
+<g fill="#ff087e" stroke="#ff91dc" stroke-width="2">
+ <ellipse cx="150" cy="125" rx="45" ry="65"/>
+ <ellipse cx="125" cy="130" rx="40" ry="55" transform="rotate(-35 125 130)"/>
+ <ellipse cx="175" cy="130" rx="40" ry="55" transform="rotate(35 175 130)"/>
+ <ellipse cx="150" cy="150" rx="30" ry="45"/>
+</g>
+
+<path d="M150 145 Q125 105 150 90 Q180 110 150 145"
+ fill="#ffb0e9" stroke="#fff" stroke-width="2"/>
+
+<path d="M150 195 Q140 245 150 285"
+ stroke="#328a37" stroke-width="9" fill="none"/>
+
+<path d="M150 240 Q90 190 75 235 Q115 265 150 240"
+ fill="#36b94c" stroke="#8cff9c" stroke-width="2"/>
+
+<path d="M150 255 Q205 195 230 230 Q200 270 150 255"
+ fill="#36b94c" stroke="#8cff9c" stroke-width="2"/>
+
+</svg>
+</div>
+
+<div class="butterfly b1">🦋</div>
+<div class="butterfly b2">🦋</div>
+<div class="butterfly b3">🦋</div>
+
+<div class="name">Shodiyona ❤️</div>
+
+<div class="message">
+  Shodiyona, bu sen uchun! ❤️
+  
+</div>
+
+</div>
+
+<script>
+const scene=document.getElementById("scene");
+
+// Uchib tushadigan gul yaproqlari
+for(let i=0;i<35;i++){
+ let p=document.createElement("div");
+ p.className="petal";
+ p.style.left=Math.random()*100+"%";
+ p.style.animationDuration=(5+Math.random()*8)+"s";
+ p.style.animationDelay=(-Math.random()*10)+"s";
+ scene.appendChild(p);
+}
+
+// Yaltiraydigan yulduzlar
+for(let i=0;i<60;i++){
+ let s=document.createElement("div");
+ s.className="star";
+ s.style.left=Math.random()*100+"%";
+ s.style.top=Math.random()*100+"%";
+ s.style.animationDelay=Math.random()*3+"s";
+ scene.appendChild(s);
+}
+</script>
+
+</body>
+</html>
+
